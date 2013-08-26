@@ -10,7 +10,7 @@
  * Simple abstract Cache defintion providing basic key value caching
  * functionality.
  */
-abstract class AbstractCache {
+interface AbstractCache {
   /**
    * Add data to the cache.
    *
@@ -23,7 +23,7 @@ abstract class AbstractCache {
    *   TRUE if the data was added to the cache. FALSE if $key already exists in
    *   the cache or if there was an error.
    */
-  abstract public function add($key, $data);
+  public function add($key, $data);
 
   /**
    * Retrieve data from the cache.
@@ -35,7 +35,7 @@ abstract class AbstractCache {
    *   FALSE if the data wasn't found in the cache. Otherwise it returns the
    *   data assoctiated with the key.
    */
-  abstract public function get($key);
+  public function get($key);
 
   /**
    * Set data in the cache.
@@ -51,7 +51,7 @@ abstract class AbstractCache {
    * @return boolean
    *   TRUE on success. FALSE on failure.
    */
-  abstract public function set($key, $data);
+  public function set($key, $data);
 
   /**
    * Delete key from the cache.
@@ -62,7 +62,12 @@ abstract class AbstractCache {
    * @return boolean
    *   TRUE if they key existed and was deleted. FALSE otherwise.
    */
-  abstract public function delete($key);
+  public function delete($key);
+
+  /**
+   * Clear all entries from the cache.
+   */
+  public static function resetCache();
 }
 
 /**
@@ -74,7 +79,7 @@ abstract class AbstractCache {
  * @todo Replace this with something more interesting like memcached
  * @todo Try some other intersting caching strategies like LRU.
  */
-class SimpleCache extends AbstractCache {
+class SimpleCache implements AbstractCache {
   const CACHESIZE = 100;
 
   protected static $cache = array();
@@ -89,7 +94,7 @@ class SimpleCache extends AbstractCache {
    * @param int $size
    *   The new size of the cache.
    */
-  static function setCacheSize($size) {
+  public static function setCacheSize($size) {
     if ($size > self::$size) {
       self::$size = $size;
     }
@@ -103,7 +108,7 @@ class SimpleCache extends AbstractCache {
   /**
    * Reset the cache flushing it and returning it to its default size.
    */
-  static function resetCache() {
+  public static function resetCache() {
     self::$cache = array();
     self::$entries = array();
     self::$size = self::CACHESIZE;
@@ -112,7 +117,7 @@ class SimpleCache extends AbstractCache {
   /**
    * @see AbstractCache::get
    */
-  function get($key) {
+  public function get($key) {
     if (array_key_exists($key, self::$cache)) {
       return self::$cache[$key];
     }
@@ -122,7 +127,7 @@ class SimpleCache extends AbstractCache {
   /**
    * @see AbstractCache::add
    */
-  function add($key, $data) {
+  public function add($key, $data) {
     if ($this->get($key) !== FALSE) {
       return FALSE;
     }
@@ -140,7 +145,7 @@ class SimpleCache extends AbstractCache {
   /**
    * @see AbstractCache::set
    */
-  function set($key, $data) {
+  public function set($key, $data) {
     if ($this->add($key, $data) === FALSE) {
       self::$cache[$key] = $data;
     }
@@ -150,7 +155,7 @@ class SimpleCache extends AbstractCache {
   /**
    * @see AbstractCache::delete
    */
-  function delete($key) {
+  public function delete($key) {
     if (!array_key_exists($key, self::$cache)) {
       return FALSE;
     }
