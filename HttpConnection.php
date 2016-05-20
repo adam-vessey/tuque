@@ -692,7 +692,7 @@ class CurlConnection extends HttpConnection {
     // Ugly substitute for a try catch finally block.
     $exception = NULL;
     try {
-      $results = $this->doCurlRequest(NULL, $fh);
+      $results = isset($fh) ? $this->doCurlRequest(NULL, $fh) : $this->doCurlRequest(NULL);
     } catch (HttpConnectionException $e) {
       $exception = $e;
     }
