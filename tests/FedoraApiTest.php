@@ -232,6 +232,7 @@ FOXML;
 
 class FedoraApiFindObjectsTest extends PHPUnit_Framework_TestCase {
 
+  protected $files;
   public $apim;
   public $apia;
   public $namespace;
@@ -249,6 +250,7 @@ class FedoraApiFindObjectsTest extends PHPUnit_Framework_TestCase {
   }
 
   protected function setUp() {
+    $this->files = array();
     $connection = new RepositoryConnection(FEDORAURL, FEDORAUSER, FEDORAPASS);
     $serializer = new FedoraApiSerializer();
 
@@ -488,6 +490,7 @@ class FedoraApiFindObjectsTest extends PHPUnit_Framework_TestCase {
     else {
       self::$saved = $this->fixtures;
     }
+    array_map('unlink', $this->files);
   }
 
   public function testDescribeRepository() {
@@ -672,6 +675,26 @@ class FedoraApiFindObjectsTest extends PHPUnit_Framework_TestCase {
       $dom[1]->loadXML($fixture['xml']);
 
       $this->assertEquals($dom[1], $dom[0]);
+    }
+  }
+
+  function testExportToFile() {
+    $this->markTestIncomplete();
+    // One would think this would work, but there are a few problems
+    // a number of tags change on ingest, so we need to do a more in
+    // depth comparison.
+    foreach ($this->fixtures as $pid => $fixture) {
+      $this->files[] = $file_name = tempnam(sys_get_temp_dir(), 'tmp');
+      $acquired = $this->apim->export($pid, array('context' => 'archive'), $file_name);
+      $this->assertTrue($acquired);
+
+      $dom = array();
+      $dom[] = new DOMDocument();
+      $dom[] = new DOMDocument();
+      $dom[0]->load($file_name);
+      $dom[1]->loadXML($fixture['xml']);
+
+      $this->assertEqualXMLStructure($dom[1]->documentElement, $dom[0]->documentElement);
     }
   }
 
