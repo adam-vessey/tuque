@@ -796,7 +796,7 @@ class FedoraApiM {
     $this->connection->addParamArray($request, $separator, $params, 'encoding');
 
     $response = $this->connection->getRequest($request, FALSE, $file);
-    $response = $this->serializer->export($response);
+    $response = $this->serializer->export($response, $file);
     return $response;
   }
 
