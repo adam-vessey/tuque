@@ -778,7 +778,7 @@ class FedoraApiM {
    *     content are represented. Options: public (default), migrate, archive.
    *   - encoding: The preferred encoding of the exported XML.
    * @param string $file
-   *   The name of a file to which to download the export.
+   *   An optional writable filename to which to download the export.
    *
    * @throws RepositoryException
    *
@@ -968,7 +968,7 @@ class FedoraApiM {
    * @param string $pid
    *   Persistent identifier of the digital object.
    * @param string $file
-   *   The optional name of a file to which to download the export.
+   *   An optional writable filename to which to download the FOXML.
    *
    * @throws RepositoryException
    *
